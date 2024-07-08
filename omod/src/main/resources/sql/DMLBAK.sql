@@ -217,7 +217,7 @@ insert into amrs_etl.etl_hiv_enrollment (
     ever_on_pep,
     ever_on_prep,
     ever_on_haart,
-    who_stage,
+                                             who_stage,
     name_of_treatment_supporter,
     relationship_of_treatment_supporter,
     treatment_supporter_telephone,
@@ -238,39 +238,39 @@ select
        e.creator,
        e.date_created,
        if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified,
-       max(if(o.concept_id in (12127), o.value_coded, if(o.concept_id=160563 and o.value_coded=1065, 160563, null))) as patient_type ,
-       max(if(o.concept_id=7013,o.value_datetime,null)) as date_first_enrolled_in_care ,
-       max(if(o.concept_id=160540,o.value_coded,null)) as entry_point, -- *
-       max(if(o.concept_id=160534,o.value_datetime,null)) as transfer_in_date, -- *
-       max(if(o.concept_id=7015,left(trim(o.value_text),100),null)) as facility_transferred_tcingfrom,
-       max(if(o.concept_id=161551,left(trim(o.value_text),100),null)) as district_transferred_from, -- *
-       max(if(o.concept_id=2157,o.value_coded,null)) as previous_regimen,
-       max(if(o.concept_id=159599,o.value_datetime,null)) as date_started_art_at_transferring_facility, -- *
-       max(if(o.concept_id=9203,o.value_datetime,null)) as date_confirmed_hiv_positive,
-       max(if(o.concept_id=160632,left(trim(o.value_text),100),null)) as facility_confirmed_hiv_positive, -- *
-       max(if(o.concept_id=160533,o.value_coded,null)) as arv_status, -- *
-       max(if(o.concept_id=1148,o.value_coded,null)) as ever_on_pmtct, -- *
-       max(if(o.concept_id=1691,o.value_coded,null)) as ever_on_pep, -- *
-       max(if(o.concept_id=165269,o.value_coded,null)) as ever_on_prep, -- *
-       max(if(o.concept_id=1181,o.value_coded,null)) as ever_on_haart, -- *
+       max(if(o.concept_id in (164932), o.value_coded, if(o.concept_id=160563 and o.value_coded=1065, 160563, null))) as patient_type ,
+       max(if(o.concept_id=160555,o.value_datetime,null)) as date_first_enrolled_in_care ,
+       max(if(o.concept_id=160540,o.value_coded,null)) as entry_point,
+       max(if(o.concept_id=160534,o.value_datetime,null)) as transfer_in_date,
+       max(if(o.concept_id=160535,left(trim(o.value_text),100),null)) as facility_transferred_tcingfrom,
+       max(if(o.concept_id=161551,left(trim(o.value_text),100),null)) as district_transferred_from,
+       max(if(o.concept_id=164855,o.value_coded,null)) as previous_regimen,
+       max(if(o.concept_id=159599,o.value_datetime,null)) as date_started_art_at_transferring_facility,
+       max(if(o.concept_id=160554,o.value_datetime,null)) as date_confirmed_hiv_positive,
+       max(if(o.concept_id=160632,left(trim(o.value_text),100),null)) as facility_confirmed_hiv_positive,
+       max(if(o.concept_id=160533,o.value_coded,null)) as arv_status,
+       max(if(o.concept_id=1148,o.value_coded,null)) as ever_on_pmtct,
+       max(if(o.concept_id=1691,o.value_coded,null)) as ever_on_pep,
+       max(if(o.concept_id=165269,o.value_coded,null)) as ever_on_prep,
+       max(if(o.concept_id=1181,o.value_coded,null)) as ever_on_haart,
        max(if(o.concept_id=5356,o.value_coded,null)) as who_stage,
-       max(if(o.concept_id=160638,left(trim(o.value_text),100),null)) as name_of_treatment_supporter, -- *
-       max(if(o.concept_id=7071,o.value_coded,null)) as relationship_of_treatment_supporter,
-       max(if(o.concept_id=160642,left(trim(o.value_text),100),null)) as treatment_supporter_telephone , -- *
-       max(if(o.concept_id=160641,left(trim(o.value_text),100),null)) as treatment_supporter_address, -- *
-       max(if(o.concept_id=5629,o.value_coded,null)) as in_school, -- *
-       max(if(o.concept_id=1174,o.value_coded,null)) as orphan, -- *
-       max(if(o.concept_id=164384, o.value_datetime, null)) as date_of_discontinuation, -- *
-       max(if(o.concept_id=161555, o.value_coded, null)) as discontinuation_reason, -- *
+       max(if(o.concept_id=160638,left(trim(o.value_text),100),null)) as name_of_treatment_supporter,
+       max(if(o.concept_id=160640,o.value_coded,null)) as relationship_of_treatment_supporter,
+       max(if(o.concept_id=160642,left(trim(o.value_text),100),null)) as treatment_supporter_telephone ,
+       max(if(o.concept_id=160641,left(trim(o.value_text),100),null)) as treatment_supporter_address,
+       max(if(o.concept_id=5629,o.value_coded,null)) as in_school,
+       max(if(o.concept_id=1174,o.value_coded,null)) as orphan,
+       max(if(o.concept_id=164384, o.value_datetime, null)) as date_of_discontinuation,
+       max(if(o.concept_id=161555, o.value_coded, null)) as discontinuation_reason,
        e.voided
-from amrs.encounter e
+from encounter e
        inner join
          (
-         select encounter_type_id, uuid, name from encounter_type where uuid='d2522122-4ea4-4a90-b23e-4f3e329144af'
+         select encounter_type_id, uuid, name from encounter_type where uuid='de78a6be-bfc5-4634-adc3-5f1a280455cc'
          ) et on et.encounter_type_id=e.encounter_type
-       inner join amrs.person p on p.person_id=e.patient_id and p.voided=0
-       left outer join amrs.obs o on o.encounter_id=e.encounter_id and o.voided=0
-                                  and o.concept_id in (12127, 7013, 7015, 2157, 9203, 5356, 7071)
+       inner join person p on p.person_id=e.patient_id and p.voided=0
+       left outer join obs o on o.encounter_id=e.encounter_id and o.voided=0
+                                  and o.concept_id in (160555,160540,160534,160535,161551,159599,160554,160632,160533,160638,160640,160642,160641,164932,160563,5629,1174,1088,161555,164855,164384,1148,1691,165269,1181,5356)
 where e.voided=0
 group by e.patient_id, e.encounter_id;
 SELECT "Completed processing HIV Enrollment data ", CONCAT("Time: ", NOW());
@@ -405,22 +405,22 @@ e.encounter_id as encounter_id,
 e.creator,
 e.date_created as date_created,
 if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified,
-max(if(o.concept_id=1839,o.value_coded,null)) as visit_scheduled ,
-max(if(o.concept_id=161643,o.value_coded,null)) as person_present, -- *
+max(if(o.concept_id=1246,o.value_coded,null)) as visit_scheduled ,
+max(if(o.concept_id=161643,o.value_coded,null)) as person_present,
 max(if(o.concept_id=5089,o.value_numeric,null)) as weight,
 max(if(o.concept_id=5085,o.value_numeric,null)) as systolic_pressure,
 max(if(o.concept_id=5086,o.value_numeric,null)) as diastolic_pressure,
 max(if(o.concept_id=5090,o.value_numeric,null)) as height,
 max(if(o.concept_id=5088,o.value_numeric,null)) as temperature,
 max(if(o.concept_id=5087,o.value_numeric,null)) as pulse_rate,
-max(if(o.concept_id=5242,o.value_numeric,null)) as respiratory_rate, -- *
-max(if(o.concept_id=5092,o.value_numeric,null)) as oxygen_saturation, -- *
+max(if(o.concept_id=5242,o.value_numeric,null)) as respiratory_rate,
+max(if(o.concept_id=5092,o.value_numeric,null)) as oxygen_saturation,
 max(if(o.concept_id=1343,o.value_numeric,null)) as muac,
-max(if(o.concept_id=162584,o.value_numeric,null)) as z_score_absolute, -- *
-max(if(o.concept_id=163515,o.value_coded,null)) as z_score, -- *
-max(if(o.concept_id=163515,o.value_coded,null)) as nutritional_status, -- *
+max(if(o.concept_id=162584,o.value_numeric,null)) as z_score_absolute,
+max(if(o.concept_id=163515,o.value_coded,null)) as z_score,
+max(if(o.concept_id=163515,o.value_coded,null)) as nutritional_status,
 max(if(o.concept_id=164930,o.value_coded,null)) as population_type,
-max(if(o.concept_id=160581,o.value_coded,null)) as key_population_type, -- *
+max(if(o.concept_id=160581,o.value_coded,null)) as key_population_type,
 max(if(o.concept_id=5356,o.value_coded,null)) as who_stage,
   concat_ws(',',nullif(max(if(o.concept_id=167394 and o.value_coded =5006 ,'Asymptomatic','')),''),
             nullif(max(if(o.concept_id=167394 and o.value_coded =130364,'Persistent generalized lymphadenopathy)','')),''),
@@ -477,51 +477,51 @@ max(if(o.concept_id=5356,o.value_coded,null)) as who_stage,
             nullif(max(if(o.concept_id=167394 and o.value_coded =130021,'Pneumocystis pneumonia','')),''),
             nullif(max(if(o.concept_id=167394 and o.value_coded =146518,'Candida of trachea, bronchi or lungs','')),''),
             nullif(max(if(o.concept_id=167394 and o.value_coded =143744,'Acquired recto-vesicular fistula','')),'')) as who_stage_associated_oi,
-max(if(o.concept_id=1154,o.value_coded,null)) as presenting_complaints, -- *
+max(if(o.concept_id=1154,o.value_coded,null)) as presenting_complaints,
 null as clinical_notes, -- max(if(o.concept_id=160430,left(trim(o.value_text),600),null)) as clinical_notes ,
-max(if(o.concept_id=164948,o.value_coded,null)) as on_anti_tb_drugs , -- *
-max(if(o.concept_id=164949,o.value_coded,null)) as on_ipt , -- *
+max(if(o.concept_id=164948,o.value_coded,null)) as on_anti_tb_drugs ,
+max(if(o.concept_id=164949,o.value_coded,null)) as on_ipt ,
 max(if(o.concept_id=164950,o.value_coded,null)) as ever_on_ipt ,
-max(if(o.concept_id=6171 and o.value_coded =159799,o.value_coded,null)) as cough,
-max(if(o.concept_id=8065 and o.value_coded =1494,o.value_coded,null)) as fever,
-max(if(o.concept_id=832 and o.value_coded =832,o.value_coded,null)) as weight_loss_poor_gain,
-max(if(o.concept_id=8061 and o.value_coded =133027,o.value_coded,null)) as night_sweats,
-max(if(o.concept_id=1729 and o.value_coded =124068,o.value_coded,null)) as tb_case_contact, -- *
-max(if(o.concept_id=1729 and o.value_coded =116334,o.value_coded,null)) as lethargy, -- * 
-max(if(o.concept_id=1729 and o.value_coded in(159799,1494,832,133027,124068,116334,1066),'Yes','No'))as screened_for_tb, -- *
-max(if(o.concept_id=307 and o.value_coded =307,o.value_coded,null)) as spatum_smear_ordered ,
-max(if(o.concept_id=1271 and o.value_coded =12,o.value_coded,null)) as chest_xray_ordered , -- *
-max(if(o.concept_id=1271 and o.value_coded = 162202,o.value_coded,null)) as genexpert_ordered , -- *
+max(if(o.concept_id=1729 and o.value_coded =159799,o.value_coded,null)) as cough,
+max(if(o.concept_id=1729 and o.value_coded =1494,o.value_coded,null)) as fever,
+max(if(o.concept_id=1729 and o.value_coded =832,o.value_coded,null)) as weight_loss_poor_gain,
+max(if(o.concept_id=1729 and o.value_coded =133027,o.value_coded,null)) as night_sweats,
+max(if(o.concept_id=1729 and o.value_coded =124068,o.value_coded,null)) as tb_case_contact,
+max(if(o.concept_id=1729 and o.value_coded =116334,o.value_coded,null)) as lethargy,
+max(if(o.concept_id=1729 and o.value_coded in(159799,1494,832,133027,124068,116334,1066),'Yes','No'))as screened_for_tb,
+max(if(o.concept_id=1271 and o.value_coded =307,o.value_coded,null)) as spatum_smear_ordered ,
+max(if(o.concept_id=1271 and o.value_coded =12,o.value_coded,null)) as chest_xray_ordered ,
+max(if(o.concept_id=1271 and o.value_coded = 162202,o.value_coded,null)) as genexpert_ordered ,
 max(if(o.concept_id=307,o.value_coded,null)) as spatum_smear_result ,
 max(if(o.concept_id=12,o.value_coded,null)) as chest_xray_result ,
-max(if(o.concept_id=162202,o.value_coded,null)) as genexpert_result , -- *
-max(if(o.concept_id=1932,o.value_coded,null)) as referral ,
-max(if(o.concept_id=163752,o.value_coded,null)) as clinical_tb_diagnosis , -- *
-max(if(o.concept_id=163414,o.value_coded,null)) as contact_invitation , -- *
-max(if(o.concept_id=162275,o.value_coded,null)) as evaluated_for_ipt , -- *
-max(if(o.concept_id=160557,o.value_coded,null)) as has_known_allergies , -- *
-max(if(o.concept_id=10239,o.value_coded,null)) as has_chronic_illnesses_cormobidities ,
-max(if(o.concept_id=12249,o.value_coded,null)) as has_adverse_drug_reaction ,
-max(if(o.concept_id=8351,o.value_coded,null)) as pregnancy_status,
+max(if(o.concept_id=162202,o.value_coded,null)) as genexpert_result ,
+max(if(o.concept_id=1272,o.value_coded,null)) as referral ,
+max(if(o.concept_id=163752,o.value_coded,null)) as clinical_tb_diagnosis ,
+max(if(o.concept_id=163414,o.value_coded,null)) as contact_invitation ,
+max(if(o.concept_id=162275,o.value_coded,null)) as evaluated_for_ipt ,
+max(if(o.concept_id=160557,o.value_coded,null)) as has_known_allergies ,
+max(if(o.concept_id=162747,o.value_coded,null)) as has_chronic_illnesses_cormobidities ,
+max(if(o.concept_id=121764,o.value_coded,null)) as has_adverse_drug_reaction ,
+max(if(o.concept_id=5272,o.value_coded,null)) as pregnancy_status,
 max(if(o.concept_id=5632,o.value_coded,null)) as breastfeeding,
-max(if(o.concept_id=11662,o.value_coded,null)) as wants_pregnancy,
-max(if(o.concept_id=6224,o.value_coded,null)) as pregnancy_outcome,
-max(if(o.concept_id=163530,o.value_text,null)) as anc_number, -- *
+max(if(o.concept_id=164933,o.value_coded,null)) as wants_pregnancy,
+max(if(o.concept_id=161033,o.value_coded,null)) as pregnancy_outcome,
+max(if(o.concept_id=163530,o.value_text,null)) as anc_number,
 max(if(o.concept_id=5596,date(o.value_datetime),null)) as expected_delivery_date,
-max(if(o.concept_id=162877,o.value_coded,null)) as ever_had_menses, -- *
-max(if(o.concept_id=1427,date(o.value_datetime),null)) as last_menstrual_period, -- *
-max(if(o.concept_id=6496,o.value_coded,null)) as menopausal,
-max(if(o.concept_id=5624,o.value_numeric,null)) as gravida, -- *
-max(if(o.concept_id=1053,o.value_numeric,null)) as parity , -- *
-max(if(o.concept_id=160080,o.value_numeric,null)) as full_term_pregnancies, -- *
+max(if(o.concept_id=162877,o.value_coded,null)) as ever_had_menses,
+max(if(o.concept_id=1427,date(o.value_datetime),null)) as last_menstrual_period,
+max(if(o.concept_id=160596,o.value_coded,null)) as menopausal,
+max(if(o.concept_id=5624,o.value_numeric,null)) as gravida,
+max(if(o.concept_id=1053,o.value_numeric,null)) as parity ,
+max(if(o.concept_id=160080,o.value_numeric,null)) as full_term_pregnancies,
 max(if(o.concept_id=1823,o.value_numeric,null)) as abortion_miscarriages ,
-max(if(o.concept_id=160653,o.value_coded,null)) as family_planning_status, -- *
-max(if(o.concept_id=7240,o.value_coded,null)) as family_planning_method,
-max(if(o.concept_id=6687,o.value_coded,null)) as reason_not_using_family_planning ,
-max(if(o.concept_id=8292,o.value_coded,null)) as tb_status,
-max(if(o.concept_id=162309,o.value_coded,null)) as started_anti_TB, -- *
-max(if(o.concept_id=1113,o.value_datetime,null)) as tb_rx_date, -- *
-max(if(o.concept_id=161654,trim(o.value_text),null)) as tb_treatment_no, -- *
+max(if(o.concept_id=160653,o.value_coded,null)) as family_planning_status,
+max(if(o.concept_id=374,o.value_coded,null)) as family_planning_method,
+max(if(o.concept_id=160575,o.value_coded,null)) as reason_not_using_family_planning ,
+max(if(o.concept_id=1659,o.value_coded,null)) as tb_status,
+max(if(o.concept_id=162309,o.value_coded,null)) as started_anti_TB,
+max(if(o.concept_id=1113,o.value_datetime,null)) as tb_rx_date,
+max(if(o.concept_id=161654,trim(o.value_text),null)) as tb_treatment_no,
 concat_ws(',',nullif(max(if(o.concept_id=162737 and o.value_coded =1107 ,'None','')),''),
                  nullif(max(if(o.concept_id=162737 and o.value_coded =136443,'Jaundice','')),''),
                  nullif(max(if(o.concept_id=162737 and o.value_coded =460,'Oedema','')),''),
@@ -533,48 +533,49 @@ concat_ws(',',nullif(max(if(o.concept_id=162737 and o.value_coded =1107 ,'None',
                  nullif(max(if(o.concept_id=162737 and o.value_coded = 126939,'Lymph Nodes Inguinal','')),''),
                  nullif(max(if(o.concept_id=162737 and o.value_coded = 823,'Wasting','')),''),
                  nullif(max(if(o.concept_id=162737 and o.value_coded = 142630,'Dehydration','')),''),
-                 nullif(max(if(o.concept_id=162737 and o.value_coded = 116334,'Lethargic','')),'')) as general_examination , -- *
-max(if(o.concept_id=159615,o.value_coded,null)) as system_examination, -- *
-max(if(o.concept_id=1120,o.value_coded,null)) as skin_findings, -- *
-max(if(o.concept_id=163309,o.value_coded,null)) as eyes_findings, -- *
-max(if(o.concept_id=164936,o.value_coded,null)) as ent_findings, -- *
-max(if(o.concept_id=12,o.value_coded,null)) as chest_findings,
-max(if(o.concept_id=1124,o.value_coded,null)) as cvs_findings, -- *
-max(if(o.concept_id=1125,o.value_coded,null)) as abdomen_findings, -- *
-max(if(o.concept_id=164937,o.value_coded,null)) as cns_findings, -- *
-max(if(o.concept_id=1126,o.value_coded,null)) as genitourinary_findings, -- * 
-max(if(o.concept_id=1109,o.value_coded,null)) as prophylaxis_given, -- *
-max(if(o.concept_id=161652,o.value_coded,null)) as ctx_adherence, -- *
-max(if(o.concept_id=162229 or (o.concept_id=1282 and o.value_coded = 105281),o.value_coded,null)) as ctx_dispensed, -- *
-max(if(o.concept_id=164941,o.value_coded,null)) as dapsone_adherence, -- *
-max(if(o.concept_id=164940 or (o.concept_id=1282 and o.value_coded = 74250),o.value_coded,null)) as dapsone_dispensed, -- *
-max(if(o.concept_id=162230,o.value_coded,null)) as inh_dispensed, -- *
-max(if(o.concept_id=1658,o.value_coded,null)) as arv_adherence, -- *
-max(if(o.concept_id=160582,o.value_coded,null)) as poor_arv_adherence_reason, -- *
+                 nullif(max(if(o.concept_id=162737 and o.value_coded = 116334,'Lethargic','')),'')) as general_examination,
+max(if(o.concept_id=159615,o.value_coded,null)) as system_examination,
+max(if(o.concept_id=1120,o.value_coded,null)) as skin_findings,
+max(if(o.concept_id=163309,o.value_coded,null)) as eyes_findings,
+max(if(o.concept_id=164936,o.value_coded,null)) as ent_findings,
+max(if(o.concept_id=1123,o.value_coded,null)) as chest_findings,
+max(if(o.concept_id=1124,o.value_coded,null)) as cvs_findings,
+max(if(o.concept_id=1125,o.value_coded,null)) as abdomen_findings,
+max(if(o.concept_id=164937,o.value_coded,null)) as cns_findings,
+max(if(o.concept_id=1126,o.value_coded,null)) as genitourinary_findings,
+max(if(o.concept_id=1109,o.value_coded,null)) as prophylaxis_given,
+max(if(o.concept_id=161652,o.value_coded,null)) as ctx_adherence,
+max(if(o.concept_id=162229 or (o.concept_id=1282 and o.value_coded = 105281),o.value_coded,null)) as ctx_dispensed,
+max(if(o.concept_id=164941,o.value_coded,null)) as dapsone_adherence,
+max(if(o.concept_id=164940 or (o.concept_id=1282 and o.value_coded = 74250),o.value_coded,null)) as dapsone_dispensed,
+max(if(o.concept_id=162230,o.value_coded,null)) as inh_dispensed,
+max(if(o.concept_id=1658,o.value_coded,null)) as arv_adherence,
+max(if(o.concept_id=160582,o.value_coded,null)) as poor_arv_adherence_reason,
 null as poor_arv_adherence_reason_other, -- max(if(o.concept_id=160632,trim(o.value_text),null)) as poor_arv_adherence_reason_other,
-max(if(o.concept_id=159423,o.value_coded,null)) as pwp_disclosure, -- *
-max(if(o.concept_id=5616,o.value_coded,null)) as pwp_pead_disclosure,-- *
-max(if(o.concept_id=161557,o.value_coded,null)) as pwp_partner_tested, -- *
-max(if(o.concept_id=6287,o.value_coded,null)) as condom_provided ,
-max(if(o.concept_id=10835,o.value_coded,null)) as substance_abuse_screening ,
-max(if(o.concept_id=161558,o.value_coded,null)) as screened_for_sti, -- *
-max(if(o.concept_id=164934,o.value_coded,null)) as cacx_screening, -- *
-max(if(o.concept_id=9609,o.value_coded,null)) as sti_partner_notification,
-max(if(o.concept_id=6578,o.value_coded,null)) as at_risk_population,
-max(if(o.concept_id=159615,o.value_coded,null)) as system_review_finding, -- *
-max(if(o.concept_id=166607,o.value_coded,null)) as appointment_consent, -- *
-max(if(o.concept_id=160288,o.value_coded,null)) as next_appointment_reason, -- *
-max(if(o.concept_id=1855,o.value_coded,null)) as stability, -- *
-max(if(o.concept_id=7413,o.value_coded,null)) as differentiated_care,
-max(if(o.concept_id=6266,o.value_coded,null)) as insurance_type,
-max(if(o.concept_id=6266,o.value_text,null)) as other_insurance_specify,
-max(if(o.concept_id=165911,o.value_coded,null)) as insurance_status, -- *
+max(if(o.concept_id=159423,o.value_coded,null)) as pwp_disclosure,
+max(if(o.concept_id=5616,o.value_coded,null)) as pwp_pead_disclosure,
+max(if(o.concept_id=161557,o.value_coded,null)) as pwp_partner_tested,
+max(if(o.concept_id=159777,o.value_coded,null)) as condom_provided ,
+max(if(o.concept_id=112603,o.value_coded,null)) as substance_abuse_screening ,
+max(if(o.concept_id=161558,o.value_coded,null)) as screened_for_sti,
+max(if(o.concept_id=164934,o.value_coded,null)) as cacx_screening,
+max(if(o.concept_id=164935,o.value_coded,null)) as sti_partner_notification,
+max(if(o.concept_id=160581,o.value_coded,null)) as at_risk_population,
+max(if(o.concept_id=159615,o.value_coded,null)) as system_review_finding,
+max(if(o.concept_id=166607,o.value_coded,null)) as appointment_consent,
+max(if(o.concept_id=160288,o.value_coded,null)) as next_appointment_reason,
+max(if(o.concept_id=1855,o.value_coded,null)) as stability,
+max(if(o.concept_id=164947,o.value_coded,null)) as differentiated_care,
+max(if(o.concept_id=159356,o.value_coded,null)) as insurance_type,
+max(if(o.concept_id=161011,o.value_text,null)) as other_insurance_specify,
+max(if(o.concept_id=165911,o.value_coded,null)) as insurance_status,
 e.voided as voided
-from amrs.encounter e
-	inner join amrs.person p on p.person_id=e.patient_id and p.voided=0
-inner join form f on f.form_id = e.form_id and f.uuid in ('0a7083ab-90e5-413d-ba5f-5fcd060d19dd')
-left outer join amrs.obs o on o.encounter_id=e.encounter_id and o.voided=0
-	and o.concept_id in (1839, 5089, 5085, 5086, 5090, 5088, 5087, 1343, 164930, 5356, 164950, 1729, 6171,8065, 832, 8061, 307, 12, 1932, 10239, 12249, 8351, 5632, 11662, 6224, 5596, 6496, 1823, 7240, 6687, 8292, 6287, 10835, 6578, 7413, 6266)
+from encounter e
+	inner join person p on p.person_id=e.patient_id and p.voided=0
+inner join form f on f.form_id = e.form_id and f.uuid in ('22c68f86-bbf0-49ba-b2d1-23fa7ccf0259','23b4ebbd-29ad-455e-be0e-04aa6bc30798','465a92f2-baf8-42e9-9612-53064be868e8')
+left outer join obs o on o.encounter_id=e.encounter_id and o.voided=0
+	and o.concept_id in (1282,1246,161643,5089,5085,5086,5090,5088,5087,5242,5092,1343,162584,163515,5356,167394,5272,5632, 161033,163530,5596,1427,5624,1053,160653,374,160575,1659,161654,161652,162229,162230,1658,160582,160632,159423,5616,161557,159777,112603,161558,160581,5096,163300, 164930, 160581, 1154, 160430,162877, 164948, 164949, 164950, 1271, 307, 12, 162202, 1272, 163752, 163414, 162275, 160557, 162747,
+121764, 164933, 160080, 1823, 164940, 164934, 164935, 159615, 160288, 1855, 164947,162549,162877,160596,1109,1113,162309,1729,162737,159615,1120,163309,164936,1123,1124,1125,164937,1126,166607,159356,161011,165911)
 where e.voided=0
 group by e.patient_id,visit_date;
 SELECT "Completed processing HIV Followup data ", CONCAT("Time: ", NOW());
@@ -1321,50 +1322,50 @@ CREATE PROCEDURE sp_populate_etl_mch_delivery()
 				e.encounter_id,
 				e.date_created,
 				if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified,
-				max(if(o.concept_id=7086,o.value_numeric,null)) as number_of_anc_visits,
-				max(if(o.concept_id=12088,o.value_coded,null)) as vaginal_examination,
-        max(if(o.concept_id=12086,o.value_coded,null)) as uterotonic_given,
-        max(if(o.concept_id=12090,o.value_coded,null)) as chlohexidine_applied_on_code_stump,
-        max(if(o.concept_id=12091,o.value_coded,null)) as vitamin_K_given,
-        max(if(o.concept_id=12089,o.value_coded,null)) as kangaroo_mother_care_given,
-        max(if(o.concept_id=1357,o.value_coded,null)) as testing_done_in_the_maternity_hiv_status,
-        max(if(o.concept_id=162131,o.value_coded,null)) as infant_provided_with_arv_prophylaxis,
-        max(if(o.concept_id=10469,o.value_coded,null)) as mother_on_haart_during_anc,
-        max(if(o.concept_id=10923,o.value_coded,null)) as mother_started_haart_at_maternity,
-        max(if(o.concept_id=7577,o.value_coded,null)) as vdrl_rpr_results,
-        max(if(o.concept_id=1836,o.value_datetime,null)) as date_of_last_menstrual_period,
+				max(if(o.concept_id=1590,o.value_numeric,null)) as number_of_anc_visits,
+				max(if(o.concept_id=160704,o.value_coded,null)) as vaginal_examination,
+        max(if(o.concept_id=1282 and o.value_coded in (81369,104590,1107),o.value_coded,null)) as uterotonic_given,
+        max(if(o.concept_id=159369,o.value_coded,null)) as chlohexidine_applied_on_code_stump,
+        max(if(o.concept_id=984,o.value_coded,null)) as vitamin_K_given,
+        max(if(o.concept_id=161094,o.value_coded,null)) as kangaroo_mother_care_given,
+        max(if(o.concept_id=1396,o.value_coded,null)) as testing_done_in_the_maternity_hiv_status,
+        max(if(o.concept_id=161930,o.value_coded,null)) as infant_provided_with_arv_prophylaxis,
+        max(if(o.concept_id=163783,o.value_coded,null)) as mother_on_haart_during_anc,
+        max(if(o.concept_id=166665,o.value_coded,null)) as mother_started_haart_at_maternity,
+        max(if(o.concept_id=299,o.value_coded,null)) as vdrl_rpr_results,
+        max(if(o.concept_id=1427,o.value_datetime,null)) as date_of_last_menstrual_period,
         max(if(o.concept_id=5596,o.value_datetime,null)) as estimated_date_of_delivery,
-        max(if(o.concept_id=10516,o.value_text,null)) as reason_for_referral,
+        max(if(o.concept_id=164359,o.value_text,null)) as reason_for_referral,
 				max(if(o.concept_id=162054,o.value_text,null)) as admission_number,
-				max(if(o.concept_id=6225,o.value_numeric,null)) as duration_of_pregnancy,
+				max(if(o.concept_id=1789,o.value_numeric,null)) as duration_of_pregnancy,
 				max(if(o.concept_id=5630,o.value_coded,null)) as mode_of_delivery,
 				max(if(o.concept_id=5599,o.value_datetime,null)) as date_of_delivery,
-				max(if(o.concept_id=10422,o.value_numeric,null)) as blood_loss,
-				max(if(o.concept_id=10423,o.value_coded,null)) as condition_of_mother,
-				max(if(o.concept_id=6224,o.value_coded,null)) as delivery_outcome,
-				max(if(o.concept_id=6430,o.value_numeric,null)) as apgar_score_1min,
-				max(if(o.concept_id=6431,o.value_numeric,null)) as apgar_score_5min,
-				max(if(o.concept_id=6432,o.value_numeric,null)) as apgar_score_10min,
-				max(if(o.concept_id=8562,o.value_coded,null)) as resuscitation_done,
-				max(if(o.concept_id=2368,o.value_coded,null)) as place_of_delivery,
-				max(if(o.concept_id=12092,o.value_text,null)) as delivery_assistant,
-				max(if(o.concept_id=1368,o.value_coded,null)) as counseling_on_infant_feeding,
-				max(if(o.concept_id=10939,o.value_coded,null)) as counseling_on_exclusive_breastfeeding,
-				max(if(o.concept_id=10937,o.value_coded,null)) as counseling_on_infant_feeding_for_hiv_infected,
-				max(if(o.concept_id=10996,o.value_coded,null)) as mother_decision,
-				max(if(o.concept_id=10428,o.value_coded,null)) as placenta_complete,
-				max(if(o.concept_id=1570,o.value_coded,null)) as maternal_death_audited,
-				max(if(o.concept_id=11273,o.value_coded,null)) as cadre,
-				max(if(o.concept_id=6653,o.value_coded,null)) as delivery_complications,
+				max(if(o.concept_id=161928,o.value_numeric,null)) as blood_loss,
+				max(if(o.concept_id=1856,o.value_coded,null)) as condition_of_mother,
+				max(if(o.concept_id=159949,o.value_coded,null)) as delivery_outcome,
+				max(if(o.concept_id=159603,o.value_numeric,null)) as apgar_score_1min,
+				max(if(o.concept_id=159604,o.value_numeric,null)) as apgar_score_5min,
+				max(if(o.concept_id=159605,o.value_numeric,null)) as apgar_score_10min,
+				max(if(o.concept_id=162131,o.value_coded,null)) as resuscitation_done,
+				max(if(o.concept_id=1572,o.value_coded,null)) as place_of_delivery,
+				max(if(o.concept_id=1473,o.value_text,null)) as delivery_assistant,
+				max(if(o.concept_id=1379 and o.value_coded=161651,o.value_coded,null)) as counseling_on_infant_feeding,
+				max(if(o.concept_id=1379 and o.value_coded=161096,o.value_coded,null)) as counseling_on_exclusive_breastfeeding,
+				max(if(o.concept_id=1379 and o.value_coded=162091,o.value_coded,null)) as counseling_on_infant_feeding_for_hiv_infected,
+				max(if(o.concept_id=1151,o.value_coded,null)) as mother_decision,
+				max(if(o.concept_id=163454,o.value_coded,null)) as placenta_complete,
+				max(if(o.concept_id=1602,o.value_coded,null)) as maternal_death_audited,
+				max(if(o.concept_id=1573,o.value_coded,null)) as cadre,
+				max(if(o.concept_id=120216,o.value_coded,null)) as delivery_complications,
 				max(if(o.concept_id=1576,o.value_coded,null)) as coded_delivery_complications,
-				max(if(o.concept_id=7261,o.value_text,null)) as other_delivery_complications,
-				max(if(o.concept_id=6225,o.value_numeric,null)) as duration_of_labor,
-				max(if(o.concept_id=6228,o.value_coded,null)) as baby_sex,
-				max(if(o.concept_id=8566,o.value_coded,null)) as baby_condition,
-				max(if(o.concept_id=10426 and o.value_coded = 84893,1,0)) as teo_given,
-				max(if(o.concept_id=6433,o.value_numeric,null)) as birth_weight,
-				max(if(o.concept_id=10425,o.value_coded,null)) as bf_within_one_hour,
-				max(if(o.concept_id=10429,o.value_coded,null)) as birth_with_deformity,
+				max(if(o.concept_id=162093,o.value_text,null)) as other_delivery_complications,
+				max(if(o.concept_id=159616,o.value_numeric,null)) as duration_of_labor,
+				max(if(o.concept_id=1587,o.value_coded,null)) as baby_sex,
+				max(if(o.concept_id=159917,o.value_coded,null)) as baby_condition,
+				max(if(o.concept_id=1282 and o.value_coded = 84893,1,0)) as teo_given,
+				max(if(o.concept_id=5916,o.value_numeric,null)) as birth_weight,
+				max(if(o.concept_id=161543,o.value_coded,null)) as bf_within_one_hour,
+				max(if(o.concept_id=164122,o.value_coded,null)) as birth_with_deformity,
 				max(if(t.test_1_result is not null, t.kit_name, null)) as test_1_kit_name,
 				max(if(t.test_1_result is not null, t.lot_no, null)) as test_1_kit_lot_no,
 				max(if(t.test_1_result is not null, t.expiry_date, null)) as test_1_kit_expiry,
@@ -1377,23 +1378,23 @@ CREATE PROCEDURE sp_populate_etl_mch_delivery()
 				max(if(t.test_3_result is not null, t.lot_no, null)) as test_3_kit_lot_no,
 				max(if(t.test_3_result is not null, t.expiry_date, null)) as test_3_kit_expiry,
 				max(if(t.test_3_result is not null, t.test_3_result, null)) as test_3_result,
-				max(if(o.concept_id=1357,(case o.value_coded when 703 then "Positive" when 664 then "Negative" when 1138 then "Inconclusive" else "" end),null)) as final_test_result,
-				max(if(o.concept_id=1357,(case o.value_coded when 1065 then "Yes" when 1066 then "No" else "" end),null)) as patient_given_result,
-				max(if(o.concept_id=2312,o.value_coded,null)) as partner_hiv_tested,
-				max(if(o.concept_id=2313,o.value_coded,null)) as partner_hiv_status,
-				max(if(o.concept_id=2370,o.value_coded,null)) as prophylaxis_given,
-				max(if(o.concept_id = 1995 and o.value_coded = 160123,1,0)) as baby_azt_dispensed, --
-				max(if(o.concept_id = 8523 and o.value_coded = 80586,1,0)) as baby_nvp_dispensed, --
-				max(if(o.concept_id=9467,o.value_text,null)) as clinical_notes
+				max(if(o.concept_id=159427,(case o.value_coded when 703 then "Positive" when 664 then "Negative" when 1138 then "Inconclusive" else "" end),null)) as final_test_result,
+				max(if(o.concept_id=164848,(case o.value_coded when 1065 then "Yes" when 1066 then "No" else "" end),null)) as patient_given_result,
+				max(if(o.concept_id=161557,o.value_coded,null)) as partner_hiv_tested,
+				max(if(o.concept_id=1436,o.value_coded,null)) as partner_hiv_status,
+				max(if(o.concept_id=1109,o.value_coded,null)) as prophylaxis_given,
+				max(if(o.concept_id = 1282 and o.value_coded = 160123,1,0)) as baby_azt_dispensed,
+				max(if(o.concept_id = 1282 and o.value_coded = 80586,1,0)) as baby_nvp_dispensed,
+				max(if(o.concept_id=159395,o.value_text,null)) as clinical_notes
 
-			from amrs.encounter e
-				inner join amrs.person p on p.person_id=e.patient_id and p.voided=0
-				inner join amrs.obs o on e.encounter_id = o.encounter_id and o.voided =0
-														and o.concept_id in(7086,12088,12086,12090,12091,12089,1357,162131,10469,7577,1836,5596,10516,162054,6225,5630,5599,10422,10423,6224,6430,6431,6432,8562,2368,12092,1368,10939,10937,10996,10428,1570,11273,6653,1576,7261,6225,6228,8566,10426,6433,10425,10429,1357,1357,2312,2313,2370)
+			from encounter e
+				inner join person p on p.person_id=e.patient_id and p.voided=0
+				inner join obs o on e.encounter_id = o.encounter_id and o.voided =0
+														and o.concept_id in(162054,1590,160704,1282,159369,984,161094,1396,161930,163783,166665,299,1427,5596,164359,1789,5630,5599,161928,1856,162093,159603,159604,159605,162131,1572,1473,1379,1151,163454,1602,1573,162093,1576,120216,159616,1587,159917,1282,5916,161543,164122,159427,164848,161557,1436,1109,5576,159595,163784,159395,159949)
 				inner join
 				(
-					select form_id, uuid,name from amrs.form where
-						uuid in('854e9b76-72f8-4a92-b9f4-3bb63eaefc7e')
+					select form_id, uuid,name from form where
+						uuid in('496c7cc3-0eea-4e84-a04c-2292949e2f7f')
 				) f on f.form_id=e.form_id
 				left join (
 										select
@@ -1406,10 +1407,10 @@ CREATE PROCEDURE sp_populate_etl_mch_delivery()
 											max(if(o.concept_id=164962, (case o.value_coded when 164960 then "Determine" when 164961 then "First Response" when 165351 then "Dual Kit" when 169126 then "One step" when 169127 then "Trinscreen" else "" end),null)) as kit_name ,
 											max(if(o.concept_id=164964,trim(o.value_text),null)) as lot_no,
 											max(if(o.concept_id=162502,date(o.value_datetime),null)) as expiry_date
-										from amrs.obs o
-											 inner join amrs.encounter e on e.encounter_id = o.encounter_id
-                                             inner join amrs.person p on p.person_id = o.person_id and p.voided=0
-											 inner join amrs.form f on f.form_id=e.form_id and f.uuid in ('854e9b76-72f8-4a92-b9f4-3bb63eaefc7e')
+										from obs o
+											 inner join encounter e on e.encounter_id = o.encounter_id
+                                             inner join person p on p.person_id = o.person_id and p.voided=0
+											 inner join form f on f.form_id=e.form_id and f.uuid in ('496c7cc3-0eea-4e84-a04c-2292949e2f7f')
 										 where o.concept_id in (1040, 1326, 1000630, 164962, 164964, 162502) and o.voided=0
 										 group by e.encounter_id, o.obs_group_id
 									 ) t on e.encounter_id = t.encounter_id
@@ -1454,23 +1455,23 @@ CREATE PROCEDURE sp_populate_etl_mch_discharge()
 				e.encounter_id,
 				e.date_created,
 				if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified,
-				max(if(o.concept_id=1368,o.value_coded,null)) as counselled_on_feeding,
-				max(if(o.concept_id=10938,o.value_coded,null)) as baby_status,
-				max(if(o.concept_id=6660,o.value_coded,null)) as vitamin_A_dispensed,
-				max(if(o.concept_id=8558,o.value_text,null)) as birth_notification_number,
-				max(if(o.concept_id=8561,o.value_text,null)) as condition_of_mother,
-				max(if(o.concept_id=1869,o.value_datetime,null)) as discharge_date,
-				max(if(o.concept_id=6749,o.value_coded,null)) as referred_from,
-				max(if(o.concept_id=10927,o.value_coded,null)) as referred_to,
-				max(if(o.concept_id=10516,o.value_text,null)) as clinical_notes
-			from amrs.encounter e
-				inner join amrs.person p on p.person_id=e.patient_id and p.voided=0
-				inner join amrs.obs o on e.encounter_id = o.encounter_id and o.voided =0
-														and o.concept_id in(1368,10938,6660,8558,8561,1869,6749,10927,10516)
+				max(if(o.concept_id=161651,o.value_coded,null)) as counselled_on_feeding,
+				max(if(o.concept_id=159926,o.value_coded,null)) as baby_status,
+				max(if(o.concept_id=161534,o.value_coded,null)) as vitamin_A_dispensed,
+				max(if(o.concept_id=162051,o.value_text,null)) as birth_notification_number,
+				max(if(o.concept_id=162093,o.value_text,null)) as condition_of_mother,
+				max(if(o.concept_id=1641,o.value_datetime,null)) as discharge_date,
+				max(if(o.concept_id=160481,o.value_coded,null)) as referred_from,
+				max(if(o.concept_id=163145,o.value_coded,null)) as referred_to,
+				max(if(o.concept_id=159395,o.value_text,null)) as clinical_notes
+			from encounter e
+				inner join person p on p.person_id=e.patient_id and p.voided=0
+				inner join obs o on e.encounter_id = o.encounter_id and o.voided =0
+														and o.concept_id in(161651,159926,161534,162051,162093,1641,160481,163145,159395)
 				inner join
 				(
-					select form_id, uuid,name from amrs.form where
-						uuid in('67d04ed7-c448-4270-92a4-3c8a01af9196')
+					select form_id, uuid,name from form where
+						uuid in('af273344-a5f9-11e8-98d0-529269fb1459')
 				) f on f.form_id=e.form_id
 				where e.voided=0
 			group by e.encounter_id ;
@@ -1768,69 +1769,69 @@ CREATE PROCEDURE sp_populate_etl_hei_enrolment()
       date_last_modified
 		)
 			select
-            				e.patient_id,
-            				e.uuid,
-            				e.creator,
-            				e.visit_id,
-            				date(e.encounter_datetime) as visit_date,
-            				e.location_id,
-            				e.encounter_id,
-            				max(if(o.concept_id=1992,o.value_coded,null)) as child_exposed,
-            				-- max(if(o.concept_id=5087,o.value_numeric,null)) as hei_id_number,
-            				max(if(o.concept_id=162054,o.value_text,null)) as spd_number, --
-            				max(if(o.concept_id=5916,o.value_numeric,null)) as birth_weight,
-            				max(if(o.concept_id=1409,o.value_numeric,null)) as gestation_at_birth,  --
-            				max(if(o.concept_id=159949,o.value_coded,null)) as birth_type, --
-            				max(if(o.concept_id=162140,o.value_datetime,null)) as date_first_seen,--
-            				max(if(o.concept_id=162051,o.value_text,null)) as birth_notification_number, --
-            				max(if(o.concept_id=162052,o.value_text,null)) as birth_certificate_number, --
-            				max(if(o.concept_id=161630,o.value_coded,null)) as need_for_special_care, --
-            				max(if(o.concept_id=161601,o.value_coded,null)) as reason_for_special_care, --
-            				max(if(o.concept_id=6749,o.value_coded,null)) as referral_source,
-            				max(if(o.concept_id=160563,o.value_coded,null)) as transfer_in, --
-            				max(if(o.concept_id=160534,o.value_datetime,null)) as transfer_in_date, --
-            				max(if(o.concept_id=160535,o.value_text,null)) as facility_transferred_from, --
-            				max(if(o.concept_id=161551,o.value_text,null)) as district_transferred_from, --
-            				max(if(o.concept_id=7013,o.value_datetime,null)) as date_first_enrolled_in_hei_care, --
-            				-- max(if(o.concept_id=1282,o.value_coded,null)) as arv_prophylaxis,
-            				max(if(o.concept_id=159941,o.value_coded,null)) as mother_breastfeeding, --
-            				-- max(if(o.concept_id=1282,o.value_coded,null)) as mother_on_NVP_during_breastfeeding,
-            				max(if(o.concept_id=152460,o.value_coded,null)) as TB_contact_history_in_household, --
-            				-- max(if(o.concept_id=162121,o.value_coded,null)) as infant_mother_link,
-            				max(if(o.concept_id=9601,o.value_coded,null)) as mother_alive,
-            				max(if(o.concept_id=1992,o.value_coded,null)) as mother_on_pmtct_drugs,
-            				max(if(o.concept_id=1086,o.value_coded,null)) as mother_on_drug, --
-            				max(if(o.concept_id=2198,o.value_coded,null)) as mother_on_art_at_infant_enrollment,
-            				max(if(o.concept_id=1088,o.value_coded,null)) as mother_drug_regimen,--
-            				max(if(o.concept_id=1282,o.value_coded,null)) as infant_prophylaxis, --
-            				max(if(o.concept_id=162053,o.value_numeric,null)) as parent_ccc_number, --
-            				max(if(o.concept_id=5630,o.value_coded,null)) as mode_of_delivery,
-            				max(if(o.concept_id=2368,o.value_coded,null)) as place_of_delivery,
-            				max(if(o.concept_id=1503,o.value_numeric,null)) as birth_length,--
-            				max(if(o.concept_id=163460,o.value_numeric,null)) as birth_order, --
-            				max(if(o.concept_id=162724,o.value_text,null)) as health_facility_name, --
-            				max(if(o.concept_id=164130,o.value_datetime,null)) as date_of_birth_notification, --
-            				max(if(o.concept_id=164129,o.value_datetime,null)) as date_of_birth_registration, --
-            				max(if(o.concept_id=164140,o.value_text,null)) as birth_registration_place, --
-            				max(if(o.concept_id=1646,o.value_text,null)) as permanent_registration_serial, --
-            				max(if(o.concept_id=162724,o.value_text,null)) as mother_facility_registered, --
-            			  max(if(o.concept_id=160753,o.value_datetime,null)) as exit_date, --
-            			  max(if(o.concept_id=161555,o.value_coded,null)) as exit_reason, --
-            			  max(if(o.concept_id=159427,(case o.value_coded when 703 then "Positive" when 664 then "Negative" when 1138 then "Inconclusive" else "" end),null)) as hiv_status_at_exit,
-            			  e.date_created as date_created,
-                    if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified
-            			from amrs.encounter e
-            				inner join amrs.person p on p.person_id=e.patient_id and p.voided=0
-            				inner join obs o on e.encounter_id = o.encounter_id and o.voided =0
-            														and o.concept_id in(1992,162054,5916,1409,162140,162051,162052,161630,161601,6749,160563,160534,160535,161551,7013,1282,159941,1282,152460,9601,1992,1086,2198,1088,1282,162053,5630,2368,161555,159427,1503,163460,162724,164130,164129,164140,1646,160753,161555,159427,159949)
+				e.patient_id,
+				e.uuid,
+				e.creator,
+				e.visit_id,
+				date(e.encounter_datetime) as visit_date,
+				e.location_id,
+				e.encounter_id,
+				max(if(o.concept_id=5303,o.value_coded,null)) as child_exposed,
+				-- max(if(o.concept_id=5087,o.value_numeric,null)) as hei_id_number,
+				max(if(o.concept_id=162054,o.value_text,null)) as spd_number,
+				max(if(o.concept_id=5916,o.value_numeric,null)) as birth_weight,
+				max(if(o.concept_id=1409,o.value_numeric,null)) as gestation_at_birth,
+				max(if(o.concept_id=159949,o.value_coded,null)) as birth_type,
+				max(if(o.concept_id=162140,o.value_datetime,null)) as date_first_seen,
+				max(if(o.concept_id=162051,o.value_text,null)) as birth_notification_number,
+				max(if(o.concept_id=162052,o.value_text,null)) as birth_certificate_number,
+				max(if(o.concept_id=161630,o.value_coded,null)) as need_for_special_care,
+				max(if(o.concept_id=161601,o.value_coded,null)) as reason_for_special_care,
+				max(if(o.concept_id=160540,o.value_coded,null)) as referral_source,
+				max(if(o.concept_id=160563,o.value_coded,null)) as transfer_in,
+				max(if(o.concept_id=160534,o.value_datetime,null)) as transfer_in_date,
+				max(if(o.concept_id=160535,o.value_text,null)) as facility_transferred_from,
+				max(if(o.concept_id=161551,o.value_text,null)) as district_transferred_from,
+				max(if(o.concept_id=160555,o.value_datetime,null)) as date_first_enrolled_in_hei_care,
+				-- max(if(o.concept_id=1282,o.value_coded,null)) as arv_prophylaxis,
+				max(if(o.concept_id=159941,o.value_coded,null)) as mother_breastfeeding,
+				-- max(if(o.concept_id=1282,o.value_coded,null)) as mother_on_NVP_during_breastfeeding,
+				max(if(o.concept_id=152460,o.value_coded,null)) as TB_contact_history_in_household,
+				-- max(if(o.concept_id=162121,o.value_coded,null)) as infant_mother_link,
+				max(if(o.concept_id=160429,o.value_coded,null)) as mother_alive,
+				max(if(o.concept_id=1148,o.value_coded,null)) as mother_on_pmtct_drugs,
+				max(if(o.concept_id=1086,o.value_coded,null)) as mother_on_drug,
+				max(if(o.concept_id=162055,o.value_coded,null)) as mother_on_art_at_infant_enrollment,
+				max(if(o.concept_id=1088,o.value_coded,null)) as mother_drug_regimen,
+				max(if(o.concept_id=1282,o.value_coded,null)) as infant_prophylaxis,
+				max(if(o.concept_id=162053,o.value_numeric,null)) as parent_ccc_number,
+				max(if(o.concept_id=5630,o.value_coded,null)) as mode_of_delivery,
+				max(if(o.concept_id=1572,o.value_coded,null)) as place_of_delivery,
+				max(if(o.concept_id=1503,o.value_numeric,null)) as birth_length,
+				max(if(o.concept_id=163460,o.value_numeric,null)) as birth_order,
+				max(if(o.concept_id=162724,o.value_text,null)) as health_facility_name,
+				max(if(o.concept_id=164130,o.value_datetime,null)) as date_of_birth_notification,
+				max(if(o.concept_id=164129,o.value_datetime,null)) as date_of_birth_registration,
+				max(if(o.concept_id=164140,o.value_text,null)) as birth_registration_place,
+				max(if(o.concept_id=1646,o.value_text,null)) as permanent_registration_serial,
+				max(if(o.concept_id=162724,o.value_text,null)) as mother_facility_registered,
+			  max(if(o.concept_id=160753,o.value_datetime,null)) as exit_date,
+			  max(if(o.concept_id=161555,o.value_coded,null)) as exit_reason,
+			  max(if(o.concept_id=159427,(case o.value_coded when 703 then "Positive" when 664 then "Negative" when 1138 then "Inconclusive" else "" end),null)) as hiv_status_at_exit,
+			  e.date_created as date_created,
+        if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified
+			from encounter e
+				inner join person p on p.person_id=e.patient_id and p.voided=0
+				inner join obs o on e.encounter_id = o.encounter_id and o.voided =0
+														and o.concept_id in(5303,162054,5916,1409,162140,162051,162052,161630,161601,160540,160563,160534,160535,161551,160555,1282,159941,1282,152460,160429,1148,1086,162055,1088,1282,162053,5630,1572,161555,159427,1503,163460,162724,164130,164129,164140,1646,160753,161555,159427,159949)
 
-            				inner join
-            				(
-            					select encounter_type_id, uuid, name from encounter_type where
-            						uuid in('5e019c94-0f80-49b7-8593-28100eb4f787','01894f88-dc73-42d4-97a3-0929118403fb')
-            				) et on et.encounter_type_id=e.encounter_type
-            				where e.voided=0
-            			group by e.patient_id,visit_date ;
+				inner join
+				(
+					select encounter_type_id, uuid, name from encounter_type where
+						uuid in('415f5136-ca4a-49a8-8db3-f994187c3af6','01894f88-dc73-42d4-97a3-0929118403fb')
+				) et on et.encounter_type_id=e.encounter_type
+				where e.voided=0
+			group by e.patient_id,visit_date ;
 		SELECT "Completed processing HEI Enrollments", CONCAT("Time: ", NOW());
 		END $$
 
@@ -3168,23 +3169,23 @@ date_last_modified
 select
 e.uuid, e.creator, e.patient_id, e.visit_id, e.encounter_datetime, e.location_id, e.encounter_id,
 max(if(o.concept_id = 164966, o.value_coded, null )) as tracing_type,
-max(if(o.concept_id=1592,date(o.value_datetime),null)) as missed_appointment_date,
-max(if(o.concept_id = 10350, o.value_coded, null )) as reason_for_missed_appointment,
-max(if(o.concept_id = 163513, o.value_text, "" )) as non_coded_missed_appointment_reason, -- *
-max(if(o.concept_id = 10995, o.value_coded, null )) as tracing_outcome,
-max(if(o.concept_id = 9069, o.value_coded, null )) as reason_not_contacted,
-max(if(o.concept_id = 10994, value_numeric, "" )) as attempt_number,
+max(if(o.concept_id=164093,date(o.value_datetime),null)) as missed_appointment_date,
+max(if(o.concept_id = 1801, o.value_coded, null )) as reason_for_missed_appointment,
+max(if(o.concept_id = 163513, o.value_text, "" )) as non_coded_missed_appointment_reason,
+max(if(o.concept_id = 160721, o.value_coded, null )) as tracing_outcome,
+max(if(o.concept_id = 166541, o.value_coded, null )) as reason_not_contacted,
+max(if(o.concept_id = 1639, value_numeric, "" )) as attempt_number,
 max(if(o.concept_id = 163725, o.value_coded, "" )) as is_final_trace,
 max(if(o.concept_id = 160433, o.value_coded, "" )) as true_status,
-max(if(o.concept_id = 1573, o.value_coded, "" )) as cause_of_death,
-max(if(o.concept_id = 9467, o.value_text, "" )) as comments,
-max(if(o.concept_id=163526,date(o.value_datetime),null)) as booking_date, -- *
+max(if(o.concept_id = 1599, o.value_coded, "" )) as cause_of_death,
+max(if(o.concept_id = 160716, o.value_text, "" )) as comments,
+max(if(o.concept_id=163526,date(o.value_datetime),null)) as booking_date,
 e.date_created as date_created,
 if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified
-from amrs.encounter e
-	inner join amrs.person p on p.person_id=e.patient_id and p.voided=0
-	inner join amrs.form f on f.form_id=e.form_id and f.uuid in ("f3ba9242-9bbb-4284-a0c0-56ac6f0cec65")
-inner join amrs.obs o on o.encounter_id = e.encounter_id and o.concept_id in (163725,160433,1573,9467,163526,164966,1592,10350,163513,10995,9069,10994) and o.voided=0
+from encounter e
+	inner join person p on p.person_id=e.patient_id and p.voided=0
+	inner join form f on f.form_id=e.form_id and f.uuid in ("a1a62d1e-2def-11e9-b210-d663bd873d93")
+inner join obs o on o.encounter_id = e.encounter_id and o.concept_id in (164966,164093,1801, 163513, 160721, 1639, 163725, 160433, 1599, 160716,163526,166541) and o.voided=0
 where e.voided=0
 group by e.encounter_id;
 SELECT "Completed processing CCC defaulter tracing forms", CONCAT("Time: ", NOW());
